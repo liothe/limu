@@ -134,7 +134,7 @@
       <x>10</x>
       <y>100</y>
       <width>331</width>
-      <height>41</height>
+      <height>42</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayoutTrackButtons">
@@ -440,6 +440,25 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QCheckBox" name="videoCheck">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="text">
+        <string>Video</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
    <widget class="QListView" name="recentTracksList">
@@ -489,7 +508,7 @@
      <x>0</x>
      <y>0</y>
      <width>350</width>
-     <height>24</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="acceptDrops">

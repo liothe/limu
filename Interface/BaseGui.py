@@ -2,8 +2,7 @@
 
 # Form implementation generated from reading ui file 'BaseGui.ui'
 #
-# Created: Fri Mar 27 16:43:02 2015
-#      by: PyQt5 UI code generator 5.3.2
+# Created by: PyQt5 UI code generator 5.4.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -66,7 +65,7 @@ class Ui_Main(object):
         self.TrackLeftText.setObjectName("TrackLeftText")
         self.horizontalLayoutTrackTime.addWidget(self.TrackLeftText)
         self.horizontalLayoutWidget_2 = QtWidgets.QWidget(self.centralwidget)
-        self.horizontalLayoutWidget_2.setGeometry(QtCore.QRect(10, 100, 331, 41))
+        self.horizontalLayoutWidget_2.setGeometry(QtCore.QRect(10, 100, 331, 42))
         self.horizontalLayoutWidget_2.setObjectName("horizontalLayoutWidget_2")
         self.horizontalLayoutTrackButtons = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_2)
         self.horizontalLayoutTrackButtons.setSpacing(0)
@@ -197,6 +196,16 @@ class Ui_Main(object):
         self.expandCheck.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.expandCheck.setObjectName("expandCheck")
         self.horizontalLayoutShowHideQueue.addWidget(self.expandCheck)
+        self.videoCheck = QtWidgets.QCheckBox(self.horizontalLayoutWidget_4)
+        self.videoCheck.setEnabled(False)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.videoCheck.sizePolicy().hasHeightForWidth())
+        self.videoCheck.setSizePolicy(sizePolicy)
+        self.videoCheck.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.videoCheck.setObjectName("videoCheck")
+        self.horizontalLayoutShowHideQueue.addWidget(self.videoCheck)
         self.recentTracksList = QtWidgets.QListView(self.centralwidget)
         self.recentTracksList.setGeometry(QtCore.QRect(350, 10, 191, 341))
         self.recentTracksList.setMouseTracking(True)
@@ -212,7 +221,7 @@ class Ui_Main(object):
         self.recentTracksList.setObjectName("recentTracksList")
         Main.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(Main)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 350, 24))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 350, 22))
         self.menubar.setAcceptDrops(False)
         self.menubar.setObjectName("menubar")
         self.menuHej = QtWidgets.QMenu(self.menubar)
@@ -257,11 +266,12 @@ class Ui_Main(object):
         self.nextButton.setShortcut(_translate("Main", "Ctrl+S"))
         self.TrackInformationText.setText(_translate("Main", "No Track Playing"))
         self.expandCheck.setText(_translate("Main", "Expand"))
+        self.videoCheck.setText(_translate("Main", "Video"))
         self.menuHej.setTitle(_translate("Main", "File"))
         self.menuHelp.setTitle(_translate("Main", "Help"))
         self.actionOpen.setText(_translate("Main", "Play Track"))
         self.actionQuit.setText(_translate("Main", "Quit"))
         self.actionAbout_LiMu.setText(_translate("Main", "About LiMu"))
-        self.actionOpen_Several.setText(_translate("Main", "Add Tracks"))
+        self.actionOpen_Several.setText(_translate("Main", "Add Track(s)"))
         self.actionOpen_Directory.setText(_translate("Main", "Add Folder"))
 

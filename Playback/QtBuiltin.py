@@ -5,24 +5,25 @@ from Playback import TimeConverter
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtCore import QUrl
 from PyQt5.QtMultimediaWidgets import QVideoWidget
+from PyQt5.QtGui import QMouseEvent
 
 video_filter = (".mkv", ".mp4", ".avi", ".wma", ".ogv", ".mpg", ".mpeg")
 
 
-class Player(object):
+class Player(QMediaPlayer):
     def __init__(self):
-        self._player = QMediaPlayer()
-        self.video = QVideoWidget()
+        QMediaPlayer.__init__(self)
+        self.video = VideoPlayer()
         self.status = None
         self.media = None
 
     def set_item(self, filepath):
         is_video = self.check_video(filepath)
         item = QMediaContent(QUrl.fromLocalFile(filepath))
-        self._player.setMedia(item)
+        self.setMedia(item)
         if is_video is True:
             self.video.setEnabled(True)
-            self._player.setVideoOutput(self.video)
+            self.setVideoOutput(self.video)
             self.video.setWindowTitle(filepath)
             self.video.show()
         else:
@@ -35,23 +36,23 @@ class Player(object):
 
     def play_item(self):
         if self.status == "playing":
-            self._player.pause()
+            self.pause()
             self.status = "paused"
         else:
-            self._player.play()
+            self.play()
             self.status = "playing"
 
     def pause_item(self):
-        self._player.pause()
+        self.pause()
         self.status = "paused"
 
     def stop_item(self):
-        self._player.stop()
+        self.stop()
         self.status = "stopped"
 
     def track_item_pos(self):
-        position = self._player.position() / 1000
-        duration = self._player.duration() / 1000
+        position = self.position() / 1000
+        duration = self.duration() / 1000
         total_dur = TimeConverter.convert(int(duration))
         current_pos = TimeConverter.convert(int(position))
         time_left = TimeConverter.calculate_time_left(int(position), int(duration))
@@ -60,12 +61,12 @@ class Player(object):
         return pd
 
     def change_item_pos(self, value):
-        self._player.setPosition(float(value) * 1000)
+        self.setPosition(float(value) * 1000)
 
     def reset(self):
         self.stop_item()
-        self._player.setPosition(float(0) * 1000)
-        self._player.setMedia(QMediaContent(QUrl.fromLocalFile(None)))
+        self.setPosition(float(0) * 1000)
+        self.setMedia(QMediaContent(QUrl.fromLocalFile(None)))
         self.status = None
         self.media = ""
 
@@ -76,3 +77,14 @@ class Player(object):
             if file.lower().endswith(end) is True:
                 video = True
         return video
+
+
+class VideoPlayer(QVideoWidget):
+    def __init__(self):
+        QVideoWidget.__init__(self)
+
+    def mouseDoubleClickEvent(self, QMouseEvent):
+        if self.isFullScreen():
+            self.showNormal()
+        else:
+            self.setFullScreen(True)

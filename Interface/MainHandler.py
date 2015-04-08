@@ -16,15 +16,7 @@ config_file = open(os.path.dirname(os.path.dirname(os.path.realpath(__file__))) 
 config = json.loads(config_file.read())
 config_file.close()
 '''Playback related'''
-if config['UseGstreamer'] is True:
-    try:
-        from Playback.Gstreamer import Player
-        print("Gstreamer used for multimedia playback")
-    except ImportError:
-        print("Cannot find Gstreamer library, falling back")
-        from Playback.QtBuiltin import Player  # Fallback to QtBuiltin if Gstreamer was set but failed
-        print("QtBuiltin used for multimedia playback")
-elif config['UseGstreamer'] is False:
+if config['UseGstreamer'] is False:
     try:
         from Playback.QtBuiltin import Player
         print("QtBuiltin used for multimedia playback")
@@ -32,6 +24,14 @@ elif config['UseGstreamer'] is False:
         print("QtBuiltin (qt5-multimedia) wasn't found - trying Gstreamer")
         from Playback.Gstreamer import Player
         print("Gstreamer used for multimedia playback")
+elif config['UseGstreamer'] is True:
+    try:
+        from Playback.Gstreamer import Player
+        print("Gstreamer used for multimedia playback")
+    except ImportError:
+        print("Cannot find Gstreamer library, falling back")
+        from Playback.QtBuiltin import Player  # Fallback to QtBuiltin if Gstreamer was set but failed
+        print("QtBuiltin used for multimedia playback")
 
 
 ''' Optional, for Track information '''
@@ -46,8 +46,9 @@ _expX, _expY = config['ExpandedWidth'], config['ExpandedHeight']  # Expanded GUI
 
 queue = Queue()  # For queuing threads
 lock = threading.Lock()  # For locking threads
-filter_files = (".mp3", ".ogg", ".oga", ".wav", ".flac", ".wma", ".mkv", ".mp4", ".avi", ".mpg", ".ogv")
 
+audio_files = (".mp3", ".ogg", ".oga", ".wav", ".flac")
+video_files = (".wma", ".mkv", ".mp4", ".avi", ".mpg", ".ogv")
 
 
 class Application(QMainWindow):
@@ -94,6 +95,8 @@ class Application(QMainWindow):
 
         # CheckBox for showing / hiding Expanded Lists
         self.ui.expandCheck.stateChanged.connect(self.lists)
+        # And for showing / hiding video window
+        self.ui.videoCheck.stateChanged.connect(self.video_window)
 
         # For dragging the slider
         self.was_it_playing = None
@@ -167,6 +170,27 @@ class Application(QMainWindow):
             self.window.resize(_norX, _norY)
             self.ui.trackList.hide()
             self.ui.recentTracksList.hide()
+
+    def video_window(self):
+        track_is_video = self.check_video()
+        if track_is_video:
+            self.ui.videoCheck.nextCheckState()
+            if self.player.video.isFullScreen():
+                self.player.video.showNormal()
+            else:
+                self.player.video.setFullScreen(True)
+        else:
+            self.ui.videoCheck.setChecked(False)
+
+    def check_video(self):
+        video = False
+        for v in video_files:
+            if self.player.get_item().lower().endswith(v):
+                video = True
+                self.player.video.setEnabled(True)
+        if video is False:
+            self.player.video.setEnabled(False)
+        return video
 
     def slider_pressed(self):
         if self.player.status == "playing":
@@ -294,7 +318,15 @@ class Application(QMainWindow):
         c = 0
         start_all = time.time()
         for track in chosen[c]:
-            queue.put(track)
+            is_video = False
+            for v in video_files:
+                if track.lower().endswith(v):
+                    is_video = True
+            # Avoid threading when adding videos
+            if is_video:
+                self.process_track(track)
+            else:
+                queue.put(track)
             c += 1
         self.start_working(start_all, c)
 
@@ -310,12 +342,21 @@ class Application(QMainWindow):
         start_all = time.time()
         for track in dir_files:
             is_track = False
-            for f in filter_files:
-                if track.lower().endswith(f) is True:
+            is_video = False
+            for a in audio_files:
+                if track.lower().endswith(a):
                     is_track = True
-            if is_track is True:
+            for v in video_files:
+                if track.lower().endswith(v):
+                    is_video = True
+            if is_track:
                 fullpath = os.path.realpath(directory) + "/" + track
                 queue.put(fullpath)
+                c += 1
+            #Avoid threading in case of video
+            if is_video is True:
+                fullpath = os.path.realpath(directory) + "/" + track
+                self.process_track(fullpath)
                 c += 1
         self.start_working(start_all, c)
 
