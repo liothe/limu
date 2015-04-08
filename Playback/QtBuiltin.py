@@ -2,22 +2,32 @@
 __author__ = 'liothe'
 
 from Playback import TimeConverter
-from PyQt5 import QtMultimedia
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtCore import QUrl
 from PyQt5.QtMultimediaWidgets import QVideoWidget
+
+video_filter = (".mkv", ".mp4", ".avi", ".wma", ".ogv", ".mpg", ".mpeg")
 
 
 class Player(object):
     def __init__(self):
-        self._player = QtMultimedia.QMediaPlayer()
+        self._player = QMediaPlayer()
         self.video = QVideoWidget()
         self.status = None
         self.media = None
 
     def set_item(self, filepath):
-        item = QtMultimedia.QMediaContent(QUrl.fromLocalFile(filepath))
+        is_video = self.check_video(filepath)
+        item = QMediaContent(QUrl.fromLocalFile(filepath))
         self._player.setMedia(item)
-        self._player.setVideoOutput(self.video)
+        if is_video is True:
+            self.video.setEnabled(True)
+            self._player.setVideoOutput(self.video)
+            self.video.setWindowTitle(filepath)
+            self.video.show()
+        else:
+            self.video.setEnabled(False)
+            self.video.hide()
         self.media = filepath
 
     def get_item(self):
@@ -29,7 +39,6 @@ class Player(object):
             self.status = "paused"
         else:
             self._player.play()
-            self.video.show()
             self.status = "playing"
 
     def pause_item(self):
@@ -56,6 +65,14 @@ class Player(object):
     def reset(self):
         self.stop_item()
         self._player.setPosition(float(0) * 1000)
-        self._player.setMedia(QtMultimedia.QMediaContent(QUrl.fromLocalFile(None)))
+        self._player.setMedia(QMediaContent(QUrl.fromLocalFile(None)))
         self.status = None
         self.media = ""
+
+    @staticmethod
+    def check_video(file):
+        video = False
+        for end in video_filter:
+            if file.lower().endswith(end) is True:
+                video = True
+        return video
