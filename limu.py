@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Main file
 __author__ = 'liothe'
-__version__ = '0.3.2'
+__version__ = '0.3.3'
 import sys
 import os
 from PyQt5.QtWidgets import QApplication
