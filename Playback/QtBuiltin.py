@@ -25,7 +25,6 @@ class Player(QMediaPlayer):
             self.video.setEnabled(True)
             self.setVideoOutput(self.video)
             self.video.setWindowTitle(filepath)
-            self.video.show()
         else:
             self.video.setEnabled(False)
             self.video.hide()
