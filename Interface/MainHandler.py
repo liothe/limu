@@ -172,25 +172,23 @@ class Application(QMainWindow):
             self.ui.recentTracksList.hide()
 
     def video_window(self):
-        track_is_video = self.check_video()
-        if track_is_video:
-            self.ui.videoCheck.nextCheckState()
-            if self.player.video.isFullScreen():
-                self.player.video.showNormal()
+        self.check_video()
+        if self.player.video.isEnabled():
+            if self.ui.videoCheck.isChecked():
+                self.player.video.show()
             else:
-                self.player.video.setFullScreen(True)
-        else:
-            self.ui.videoCheck.setChecked(False)
+                self.player.video.hide()
 
     def check_video(self):
-        video = False
-        for v in video_files:
-            if self.player.get_item().lower().endswith(v):
-                video = True
-                self.player.video.setEnabled(True)
-        if video is False:
-            self.player.video.setEnabled(False)
-        return video
+        if self.player.get_item() is not None:
+            video = False
+            for v in video_files:
+                if self.player.get_item().lower().endswith(v):
+                    self.ui.videoCheck.setEnabled(True)
+                    video = True
+            if video is False:
+                self.ui.videoCheck.setChecked(False)
+                self.ui.videoCheck.setEnabled(False)
 
     def slider_pressed(self):
         if self.player.status == "playing":
@@ -229,6 +227,7 @@ class Application(QMainWindow):
     def play_track(self):
         if self.player.get_item() is not None:
             self.player.play_item()
+            self.video_window()
             print(self.player.status)
             if self.player.status == "paused":
                 self.ui.playpauseButton.setIcon(self.play_icon)
