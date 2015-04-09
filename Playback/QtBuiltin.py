@@ -26,8 +26,8 @@ class Player(QMediaPlayer):
             self.setVideoOutput(self.video)
             self.video.setWindowTitle(filepath)
         else:
-            self.video.setEnabled(False)
             self.video.hide()
+            self.video.setEnabled(False)
         self.media = filepath
 
     def get_item(self):

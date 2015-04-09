@@ -186,9 +186,14 @@ class Application(QMainWindow):
                 if self.player.get_item().lower().endswith(v):
                     self.ui.videoCheck.setEnabled(True)
                     video = True
+                    self.player.video.setEnabled(True)
+                    self.player.setVideoOutput(self.player.video)
+                    self.player.video.setWindowTitle(self.player.get_item())
+
             if video is False:
                 self.ui.videoCheck.setChecked(False)
                 self.ui.videoCheck.setEnabled(False)
+                self.player.video.setEnabled(False)
 
     def slider_pressed(self):
         if self.player.status == "playing":
