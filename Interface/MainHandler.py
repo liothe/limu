@@ -194,6 +194,7 @@ class Application(QMainWindow):
                 self.ui.videoCheck.setChecked(False)
                 self.ui.videoCheck.setEnabled(False)
                 self.player.video.setEnabled(False)
+        return video
 
     def slider_pressed(self):
         if self.player.status == "playing":
@@ -232,7 +233,6 @@ class Application(QMainWindow):
     def play_track(self):
         if self.player.get_item() is not None:
             self.player.play_item()
-            self.video_window()
             print(self.player.status)
             if self.player.status == "paused":
                 self.ui.playpauseButton.setIcon(self.play_icon)

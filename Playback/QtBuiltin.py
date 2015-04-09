@@ -18,16 +18,8 @@ class Player(QMediaPlayer):
         self.media = None
 
     def set_item(self, filepath):
-        is_video = self.check_video(filepath)
         item = QMediaContent(QUrl.fromLocalFile(filepath))
         self.setMedia(item)
-        if is_video is True:
-            self.video.setEnabled(True)
-            self.setVideoOutput(self.video)
-            self.video.setWindowTitle(filepath)
-        else:
-            self.video.hide()
-            self.video.setEnabled(False)
         self.media = filepath
 
     def get_item(self):
@@ -68,14 +60,6 @@ class Player(QMediaPlayer):
         self.setMedia(QMediaContent(QUrl.fromLocalFile(None)))
         self.status = None
         self.media = ""
-
-    @staticmethod
-    def check_video(file):
-        video = False
-        for end in video_filter:
-            if file.lower().endswith(end) is True:
-                video = True
-        return video
 
 
 class VideoPlayer(QVideoWidget):
