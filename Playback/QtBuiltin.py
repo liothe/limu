@@ -7,7 +7,7 @@ from PyQt5.QtCore import QUrl
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtGui import QMouseEvent
 
-video_filter = (".mkv", ".mp4", ".avi", ".wma", ".ogv", ".mpg", ".mpeg")
+video_filter = (".mkv", ".mp4", ".avi", ".wma", ".ogv", ".mpg", ".mpeg", ".flv")
 
 
 class Player(QMediaPlayer):
