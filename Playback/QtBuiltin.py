@@ -7,7 +7,11 @@ from PyQt5.QtCore import QUrl
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtGui import QMouseEvent
 
-video_filter = (".mkv", ".mp4", ".avi", ".wma", ".ogv", ".mpg", ".mpeg", ".flv")
+'''App Settings'''
+from ConfigHandler import Settings
+config = Settings.get()
+
+video_filter = config["VideoFiles"]
 
 
 class Player(QMediaPlayer):
@@ -72,9 +76,10 @@ class Player(QMediaPlayer):
     @staticmethod
     def check_video(file):
         video = False
-        for end in video_filter:
-            if file.lower().endswith(end) is True:
+        for video_format in video_filter:
+            if file.lower().endswith(video_format) is True:
                 video = True
+                break
         return video
 
 

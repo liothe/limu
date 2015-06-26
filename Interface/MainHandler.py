@@ -11,10 +11,9 @@ import threading
 from queue import Queue
 
 '''App Settings'''
-import json
-config_file = open(os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/settings.conf")
-config = json.loads(config_file.read())
-config_file.close()
+from ConfigHandler import Settings
+config = Settings.get()
+
 '''Playback related'''
 if config['UseGstreamer'] is False:
     try:
@@ -47,8 +46,8 @@ _expX, _expY = config['ExpandedWidth'], config['ExpandedHeight']  # Expanded GUI
 queue = Queue()  # For queuing threads
 lock = threading.Lock()  # For locking threads
 
-audio_files = (".mp3", ".ogg", ".oga", ".wav", ".flac")
-video_files = (".wma", ".mkv", ".mp4", ".avi", ".mpg", ".ogv")
+audio_files = config["AudioFiles"]
+video_files = config["VideoFiles"]
 
 
 class Application(QMainWindow):
@@ -299,7 +298,7 @@ class Application(QMainWindow):
         if arg is not False:
             chosen = [arg]
         elif arg is False:
-            chosen = QFileDialog.getOpenFileName(parent=self.window, filter="Media (*.mp3 *.ogg *.oga *.wav *.flac *.wma *.mkv *.mp4 *.avi *.mpg *.ogv)", directory=os.getenv('HOME'))
+            chosen = QFileDialog.getOpenFileName(parent=self.window, filter="Media (*.mp3 *.ogg *.oga *.wav *.flac *.wma *.mkv *.mp4 *.avi *.mpg *.ogv)", directory=os.getenv('HOME'), caption="Open single track")
         if chosen[0] != "":
             if self.player.status != "stopped":
                 self.player.stop_item()
@@ -313,20 +312,27 @@ class Application(QMainWindow):
 
     @pyqtSlot()
     def choose_tracks(self):
-        chosen = QFileDialog.getOpenFileNames(parent=self.window, filter="Media (*.mp3 *.ogg *.oga *.wav *.flac *.wma *.mkv *.mp4 *.avi *.mpg *.ogv)", directory=os.getenv('HOME'))
+        chosen = QFileDialog.getOpenFileNames(parent=self.window, directory=os.getenv('HOME'), caption="Open one or more tracks")
         c = 0
         start_all = time.time()
         for track in chosen[c]:
+            is_audio = False
             is_video = False
+            for a in audio_files:
+                if track.lower().endswith(a):
+                    is_audio = True
+                    break
             for v in video_files:
                 if track.lower().endswith(v):
                     is_video = True
+                    break
+            if is_audio:
+                queue.put(track)
+                c += 1
             # Avoid threading when adding videos
             if is_video:
                 self.process_track(track)
-            else:
-                queue.put(track)
-            c += 1
+                c += 1
         self.start_working(start_all, c)
 
     @pyqtSlot()
@@ -335,25 +341,27 @@ class Application(QMainWindow):
             directory = [arg][0]
             dir_files = os.listdir(directory)
         else:
-            directory = QFileDialog.getExistingDirectory(directory=os.getenv('HOME'))
+            directory = QFileDialog.getExistingDirectory(directory=os.getenv('HOME'), caption="Open directory with tracks")
             dir_files = os.listdir(directory)
         c = 0
         start_all = time.time()
         for track in dir_files:
-            is_track = False
+            is_audio = False
             is_video = False
             for a in audio_files:
                 if track.lower().endswith(a):
-                    is_track = True
+                    is_audio = True
+                    break
             for v in video_files:
                 if track.lower().endswith(v):
                     is_video = True
-            if is_track:
+                    break
+            if is_audio:
                 fullpath = os.path.realpath(directory) + "/" + track
                 queue.put(fullpath)
                 c += 1
             #Avoid threading in case of video
-            if is_video is True:
+            if is_video:
                 fullpath = os.path.realpath(directory) + "/" + track
                 self.process_track(fullpath)
                 c += 1
