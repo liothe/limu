@@ -46,3 +46,5 @@ target/
 # PyCharm boop woop
 .idea
 .idea/*
+
+settings.json
