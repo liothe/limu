@@ -339,12 +339,14 @@ class Application(QMainWindow):
 
     @pyqtSlot()
     def choose_directory(self, arg=False):
+        dir_files = ''
         if arg is not False:
             directory = [arg][0]
             dir_files = os.listdir(directory)
         else:
             directory = QFileDialog.getExistingDirectory(directory=os.getenv('HOME'), caption="Open directory with tracks")
-            dir_files = os.listdir(directory)
+            if directory != '':
+                dir_files = os.listdir(directory)
         count = len(dir_files)
         start_all = time.time()
         for track in dir_files:
